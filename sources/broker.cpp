@@ -1,3 +1,4 @@
+// Copyright 2021 Your Name <your_email>
 #include "broker.hpp"
 
 bool check_file(const path &p) {
@@ -8,10 +9,11 @@ bool check_file(const path &p) {
 void broker::read_file_info(const path &p) {
   if (!check_file(p)) throw std::exception();
 
-  auto* accountInfo = new account::account_info();
+  auto *accountInfo = new account::account_info();
   unsigned const arr_len = 3;
   std::string account_num;
-  std::string* arr[arr_len] = {&account_num, &accountInfo->type, &accountInfo->date};
+  std::string *arr[arr_len] = {&account_num, &accountInfo->type,
+                               &accountInfo->date};
 
   std::string file_stem = p.stem().string();
 
@@ -28,7 +30,7 @@ void broker::read_file_info(const path &p) {
   accountInfo->extension = p.extension().string();
 
   unsigned unsigned_account_num = std::stoul(account_num);
-  for (auto item: accounts) {
+  for (auto item : accounts) {
     if (item->account_num == unsigned_account_num) {
       item->info.push_back(accountInfo);
       if (accountInfo->date > *item->last_date)
@@ -36,7 +38,7 @@ void broker::read_file_info(const path &p) {
       return;
     }
   }
-  auto* new_account = new account();
+  auto *new_account = new account();
   new_account->info.push_back(accountInfo);
   new_account->account_num = unsigned_account_num;
   *new_account->last_date = accountInfo->date;
@@ -83,19 +85,15 @@ broker::~broker() {
   std::destroy(accounts.begin(), accounts.end());
 }
 
-Brokers::Brokers() {
-  read_info(boost::filesystem::current_path());
-}
+Brokers::Brokers() { read_info(boost::filesystem::current_path()); }
 
-Brokers::Brokers(const path &p) {
-  read_info(p);
-}
+Brokers::Brokers(const path &p) { read_info(p); }
 
 void Brokers::read_info(const path &p) {
   for (const directory_entry &x : directory_iterator{p}) {
     if (is_directory(x.path())) {
       bool condition_flag = true;
-      for (auto item: brokers) {
+      for (auto item : brokers) {
         if (x.path().filename() == *item->name) {
           item->read_info(x.path());
           condition_flag = false;
@@ -113,9 +111,9 @@ void Brokers::read_info(const path &p) {
   }
 }
 
-std::ostream& Brokers::operator<<(std::ostream& os) {
-  for (auto item: brokers) {
-    for (auto j: item->accounts) {
+std::ostream &Brokers::operator<<(std::ostream &os) {
+  for (auto item : brokers) {
+    for (auto j : item->accounts) {
       os << "broker:" << *item->name << " ";
       os << "account:" << j->account_num << " ";
       os << "files:" << j->info.size() << " ";
@@ -125,6 +123,4 @@ std::ostream& Brokers::operator<<(std::ostream& os) {
   return os;
 }
 
-Brokers::~Brokers() {
-  std::destroy(brokers.begin(), brokers.end());
-}
+Brokers::~Brokers() { std::destroy(brokers.begin(), brokers.end()); }
