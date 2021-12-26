@@ -1,5 +1,13 @@
-#include <example.hpp>
+#include <broker.hpp>
+using namespace boost::filesystem;
 
-int main() {
-  example();
+int main(int argc, char* argv[]) {
+  Brokers* brs;
+  if (argc < 2)
+    brs = new Brokers();
+  else
+    brs = new Brokers(argv[1]);
+
+  delete brs;
+  return 0;
 }
