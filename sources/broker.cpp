@@ -1,14 +1,14 @@
 // Copyright 2021 Your Name <your_email>
-#include "broker.hpp"
 
-using namespace boost::filesystem;
+#include <broker.hpp>
+#include <stdexcept>
 
-bool check_file(const path &p) {
+bool check_file(const boost::filesystem::path &p) {
   if (is_regular_file(p) && p.extension().string() == ".txt") return true;
   return false;
 }
 
-void broker::read_file_info(const path &p) {
+void broker::read_file_info(const boost::filesystem::path &p) {
   if (!check_file(p)) throw std::exception();
 
   auto *accountInfo = new account::account_info();
@@ -47,9 +47,11 @@ void broker::read_file_info(const path &p) {
   *new_account->last_date = accountInfo->date;
 }
 
-void broker::add(const path &p) {
+void broker::add(const boost::filesystem::path &p) {
   if (is_directory(p)) {
-    for (const directory_entry &x : directory_iterator{p}) add(x.path());
+    for (const boost::filesystem::directory_entry &x :
+         boost::filesystem::directory_iterator{p})
+      add(x.path());
   } else if (is_symlink(p)) {
     add(read_symlink(p));
   } else {
@@ -68,15 +70,17 @@ broker::broker() {
   read_info(boost::filesystem::current_path());
 }
 
-broker::broker(const path &p) {
+broker::broker(const boost::filesystem::path &p) {
   name = nullptr;
   read_info(p);
 }
 
-void broker::read_info(const path &p) {
+void broker::read_info(const boost::filesystem::path &p) {
   if (is_directory(p)) {
     if (!name) name = new std::string(p.filename().string());
-  } else { return; }
+  } else {
+    return;
+  }
   add(p);
 }
 
@@ -89,10 +93,11 @@ broker::~broker() {
 
 Brokers::Brokers() { read_info(boost::filesystem::current_path()); }
 
-Brokers::Brokers(const path &p) { read_info(p); }
+Brokers::Brokers(const boost::filesystem::path &p) { read_info(p); }
 
-void Brokers::read_info(const path &p) {
-  for (const directory_entry &x : directory_iterator{p}) {
+void Brokers::read_info(const boost::filesystem::path &p) {
+  for (const boost::filesystem::directory_entry &x :
+       boost::filesystem::directory_iterator{p}) {
     if (is_directory(x.path())) {
       bool condition_flag = true;
       for (auto item : brokers) {
