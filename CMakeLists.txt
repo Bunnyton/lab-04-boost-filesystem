@@ -51,8 +51,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(
         demo ${PROJECT_NAME}
-        Boost::filesystem
-        Boost::system)
+        boost::filesystem
+        boost::system)
 
 if (BUILD_TESTS)
     add_executable(tests
