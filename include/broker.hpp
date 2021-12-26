@@ -2,10 +2,12 @@
 #ifndef INCLUDE_BROKER_HPP_
 #define INCLUDE_BROKER_HPP_
 
-#include "boost/filesystem.hpp"
 #include <iostream>
+#include <string>
+#include <vector>
+#include <boost/regex.hpp>
 
-using namespace boost::filesystem;
+#include "boost/filesystem.hpp"
 
 struct account {
   struct account_info {
@@ -25,10 +27,10 @@ class broker {
 
  public:
   broker();
-  broker(const path &p);
-  void add(const path &p);
-  void read_file_info(const path &p);
-  void read_info(const path &p);
+  explicit broker(const boost::filesystem::path &p);
+  void add(const boost::filesystem::path &p);
+  void read_file_info(const boost::filesystem::path &p);
+  void read_info(const boost::filesystem::path &p);
   void set_name(std::string &str);
   ~broker();
 };
@@ -39,8 +41,8 @@ class Brokers {
 
  public:
   Brokers();
-  Brokers(const path &p);
-  void read_info(const path &p);
+  explicit Brokers(const boost::filesystem::path &p);
+  void read_info(const boost::filesystem::path &p);
   std::ostream &operator<<(std::ostream &os);
   ~Brokers();
 };

@@ -1,6 +1,8 @@
 // Copyright 2021 Your Name <your_email>
 #include "broker.hpp"
 
+using namespace boost::filesystem;
+
 bool check_file(const path &p) {
   if (is_regular_file(p) && p.extension().string() == ".txt") return true;
   return false;
@@ -22,8 +24,9 @@ void broker::read_file_info(const path &p) {
     if (i == '_') {
       if (j == arr_len - 1) break;
       j++;
-    } else
+    } else {
       *arr[j] += i;
+    }
   }
   if (j != arr_len - 1) return;
 
@@ -73,8 +76,7 @@ broker::broker(const path &p) {
 void broker::read_info(const path &p) {
   if (is_directory(p)) {
     if (!name) name = new std::string(p.filename().string());
-  } else
-    return;
+  } else { return; }
   add(p);
 }
 
