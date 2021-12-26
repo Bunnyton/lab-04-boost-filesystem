@@ -20,7 +20,8 @@ HunterGate(
         SHA1 "95c47c92f68edb091b5d6d18924baabe02a6962a"
 )
 
-project(lab-04-boost-filesystem VERSION 0.1.0)
+# TODO: rename project and delete this comment
+project(lab4 VERSION 0.1.0)
 string(APPEND CMAKE_CXX_FLAGS " -pedantic -Werror -Wall -Wextra")
 string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-command-line-argument")
 string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
@@ -30,31 +31,27 @@ string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
-hunter_add_package(Boost COMPONENTS filesystem regex)
-hunter_add_package(Boost COMPONENTS system regex)
-find_package(Boost CONFIG REQUIRED filesystem regex)
-find_package(Boost CONFIG REQUIRED system regex)
-
+hunter_add_package(Boost COMPONENTS system filesystem)
+find_package(Boost CONFIG REQUIRED system filesystem)
 
 add_library(${PROJECT_NAME} STATIC
+        # enum your files and delete this comment
         ${CMAKE_CURRENT_SOURCE_DIR}/sources/broker.cpp
-        sources/broker.cpp include/broker.hpp)
+        )
 
 add_executable(demo
         ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/broker.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:include>"
         )
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::system Boost::filesystem)
+target_link_libraries(demo ${PROJECT_NAME})
 
-target_link_libraries(
-        demo ${PROJECT_NAME}
-        boost::filesystem
-        boost::system)
-
-if (BUILD_TESTS)
+if(BUILD_TESTS)
     add_executable(tests
             # TODO: enum your files and delete this comment
             ${CMAKE_CURRENT_SOURCE_DIR}/tests/example.cpp
@@ -62,9 +59,9 @@ if (BUILD_TESTS)
     target_link_libraries(tests ${PROJECT_NAME} GTest::gtest_main)
     enable_testing()
     add_test(NAME unit_tests COMMAND tests)
-endif ()
+endif()
 
-if (BUILD_COVERAGE)
+if(BUILD_COVERAGE)
     set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/coverage/cmake")
     find_package(codecov)
@@ -72,9 +69,9 @@ if (BUILD_COVERAGE)
     add_coverage(${PROJECT_NAME})
     add_coverage(tests)
     coverage_evaluate()
-endif ()
+endif()
 
-if (BUILD_DOCS)
+if(BUILD_DOCS)
     set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/_docs)
     set(DOXYGEN_EXAMPLE_PATH examples)
     set(DOXYGEN_GENERATE_HTML NO)
@@ -83,7 +80,7 @@ if (BUILD_DOCS)
     doxygen_add_docs(docs include)
     install(DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/man DESTINATION share)
     # add_dependencies(install docs) need to call target docs before install or package
-endif ()
+endif()
 
 include(CPackConfig.cmake)
 
@@ -101,5 +98,4 @@ install(EXPORT "${PROJECT_NAME}-targets"
         NAMESPACE "${PROJECT_NAME}::"
         DESTINATION "lib/cmake"
         )
-
 file(COPY misc DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

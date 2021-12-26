@@ -22,13 +22,13 @@ void broker::read_file_info(const boost::filesystem::path &p) {
   unsigned j = 0;
   for (char i : file_stem) {
     if (i == '_') {
-      if (j == arr_len - 1) break;
       j++;
+      if (j > arr_len - 1) break;
     } else {
       *arr[j] += i;
     }
   }
-  if (j != arr_len - 1) return;
+  if (j != arr_len - 1) throw std::exception();
 
   accountInfo->extension = p.extension().string();
 
@@ -38,7 +38,7 @@ void broker::read_file_info(const boost::filesystem::path &p) {
       item->info.push_back(accountInfo);
       if (accountInfo->date > *item->last_date)
         *item->last_date = accountInfo->date;
-      return;
+      throw std::exception();
     }
   }
   auto *new_account = new account();
